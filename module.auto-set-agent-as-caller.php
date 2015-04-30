@@ -33,7 +33,7 @@ SetupWebPage::AddModule(
 	array(
 		// Identification
 		//
-		'label' => "Auto set this Agent as default Caller $sCommit",
+		'label' => "Auto set current Agent as ticket Caller $sCommit",
 		'category' => 'business',
 
 		// Setup
