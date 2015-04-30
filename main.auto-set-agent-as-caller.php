@@ -4,7 +4,7 @@
  * Module auto-set-agent-as-caller
  *
  * @author      Vladimir Kunin <v.b.kunin@gmail.com>
- *              https://github.com/vbkunin
+ *              https://github.com/vbkunin/auto-set-agent-as-caller
  * @license     http://www.opensource.org/licenses/gpl-3.0.html LGPL
  */
 
@@ -21,10 +21,12 @@ class AutoSetAgentAsCaller implements iApplicationUIExtension
 			$oPage->add_ready_script(
 <<< EOF
 				if ($iOrgId && $iCallerId) {
-				  $("#field_2_caller_id").one("update", "select", function() {
-				    $("select#2_caller_id").val("$iCallerId").trigger("change");
-				  });
-					$("select#2_org_id").val("$iOrgId").trigger("change");
+					var orgFieldId = oWizardHelper.GetFieldId("org_id");
+					var callerFieldId = oWizardHelper.GetFieldId("caller_id");
+					$("#field_" + callerFieldId).one("update", "select", function() {
+						$("#" + callerFieldId).val("$iCallerId").trigger("change");
+					});
+					$("#" + orgFieldId).val("$iOrgId").trigger("change");
 				}
 EOF
 			);
@@ -64,7 +66,7 @@ EOF
 	{
 		// No action
 		return array();
-    }
+	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	//
