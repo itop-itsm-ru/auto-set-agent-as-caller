@@ -19,7 +19,7 @@ auto-set-agent-as-caller
     'enabled' => 'Incident, UserRequest',
 ),
 ```
-#### Возможные варианты *enabled*
+##### Возможные варианты *enabled*
 
  - `'enabled' => 'Incident, UserRequest, Person'` - поля `org_id` и `caller_id` (если имеется) заполняются в перечисленных классах.
  - `'enabled' => true` - модуль включён для всех классов.
