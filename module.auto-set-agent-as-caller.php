@@ -65,7 +65,8 @@ SetupWebPage::AddModule(
 		// Default settings
 		//
 		'settings' => array(
-			'enabled' => true,
+			// 'true', 'false' or 'Incident, Problem, Contact, etc' and any other CI which contains 'org_id' attribute
+			'enabled' => 'Incident, UserRequest',
 		),
 	)
 );

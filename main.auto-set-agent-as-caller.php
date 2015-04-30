@@ -13,23 +13,23 @@ class AutoSetAgentAsCaller implements iApplicationUIExtension
 {
 	public function OnDisplayProperties($oObject, WebPage $oPage, $bEditMode = false)
 	{
-		$bModuleEnabled = utils::GetConfig()->GetModuleSetting('auto-set-agent-as-caller', 'enabled');
-		if ($bModuleEnabled && $bEditMode && $oObject->IsNew())
+		if ($this->IsEnabled($oObject) && $bEditMode && $oObject->IsNew())
 		{
 			$iOrgId = $this->GetUserOrgId();
 			$iCallerId = UserRights::GetContactId();
-			$oPage->add_ready_script(
+			if ($iOrgId && $iCallerId)
+			{
+				$oPage->add_ready_script(
 <<< EOF
-				if ($iOrgId && $iCallerId) {
 					var orgFieldId = oWizardHelper.GetFieldId("org_id");
 					var callerFieldId = oWizardHelper.GetFieldId("caller_id");
 					$("#field_" + callerFieldId).one("update", "select", function() {
 						$("#" + callerFieldId).val("$iCallerId").trigger("change");
 					});
 					$("#" + orgFieldId).val("$iOrgId").trigger("change");
-				}
 EOF
-			);
+				);
+			}
 		}
 	}
 
@@ -73,6 +73,31 @@ EOF
 	// Plug-ins specific functions
 	//
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	protected function IsEnabled($oObject)
+	{
+		$ModuleSettings = utils::GetConfig()->GetModuleSetting('auto-set-agent-as-caller', 'enabled');
+		if (gettype($ModuleSettings) == 'boolean')
+		{
+			return $ModuleSettings;
+		}
+		elseif (gettype($ModuleSettings) == 'string')
+		{
+			$aClasses = array_map('trim', explode(",", $ModuleSettings));
+			if (in_array(get_class($oObject), $aClasses))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	protected function GetUserOrgId()
 	{
