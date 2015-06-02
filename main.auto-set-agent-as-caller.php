@@ -84,14 +84,14 @@ EOF
 		elseif (gettype($ModuleSettings) == 'string')
 		{
 			$aClasses = array_map('trim', explode(",", $ModuleSettings));
-			if (in_array(get_class($oObject), $aClasses))
+			foreach ($aClasses as $sClass)
 			{
-				return true;
+				if ($oObject instanceof $sClass)
+				{
+					return true;
+				}
 			}
-			else
-			{
-				return false;
-			}
+			return false;
 		}
 		else
 		{
