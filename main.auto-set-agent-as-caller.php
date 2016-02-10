@@ -15,18 +15,39 @@ class AutoSetAgentAsCaller implements iApplicationUIExtension
 	{
 		if ($this->IsEnabled($oObject) && $bEditMode && $oObject->IsNew())
 		{
-			$iOrgId = $this->GetUserOrgId();
+			$iOrgId = 0;
+			$sOrgName = '';
 			$iCallerId = UserRights::GetContactId();
-			if ($iOrgId && $iCallerId)
+			$sCallerName = '';
+			$oCaller = MetaModel::GetObject('Contact', $iCallerId, false); // false => Can fail
+			if (is_object($oCaller)) {
+				$sCallerName = $oCaller->Get('friendlyname');
+				$oOrg = MetaModel::GetObject('Organization', $oCaller->Get('org_id'), false); // false => can fail
+				if (is_object($oOrg)) {
+					$iOrgId = $oOrg->GetKey();
+					$sOrgName = $oOrg->Get('friendlyname');
+				}
+			}
+			if ($iOrgId && $sOrgName && $iCallerId && $sCallerName)
 			{
 				$oPage->add_ready_script(
 <<< EOF
 					var orgFieldId = oWizardHelper.GetFieldId("org_id");
 					var callerFieldId = oWizardHelper.GetFieldId("caller_id");
-					$("#field_" + callerFieldId).one("update", "select", function() {
-						$("#" + callerFieldId).val("$iCallerId").trigger("change");
+					$("#" + orgFieldId).one("change", function() {
+						// Нужно ждать, пока обновится виджет (select или autocomplete)
+						// Как отловить это событие, не придумал ;-(
+                        setTimeout(function() {
+                            $("#label_" + callerFieldId).val("$sCallerName");
+							$("#" + callerFieldId).val("$iCallerId");
+							$("#" + callerFieldId).trigger("change");
+							$("#" + callerFieldId).trigger("extkeychange");
+						}, 1000);
 					});
-					$("#" + orgFieldId).val("$iOrgId").trigger("change");
+					$("#label_" + orgFieldId).val("$sOrgName");
+					$("#" + orgFieldId).val("$iOrgId");
+					$("#" + orgFieldId).trigger("change");
+					$("#" + orgFieldId).trigger("extkeychange");
 EOF
 				);
 			}
@@ -98,21 +119,4 @@ EOF
 			return false;
 		}
 	}
-
-	protected function GetUserOrgId()
-	{
-		$iOrgId = 0;
-		$iContactId = UserRights::GetContactId();
-		$oContact = MetaModel::GetObject('Contact', $iContactId, false); // false => Can fail
-		if (is_object($oContact))
-		{
-			$oOrg = MetaModel::GetObject('Organization', $oContact->Get('org_id'), false); // false => can fail
-			if (is_object($oOrg))
-			{
-				$iOrgId = $oOrg->GetKey();
-			}
-		}
-		return $iOrgId;
-	}
 }
-?>
