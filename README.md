@@ -27,4 +27,5 @@ auto-set-agent-as-caller
 
 ### Ссылки
 - [iTop ITSM & CMDB по-русски](http://community.itop-itsm.ru)
+- [Страница модуля на сайте сообщества](http://community.itop-itsm.ru/t/avtozapolnenie-polej-organizacziya-i-inicziator-pri-sozdanii-tiketa/177)
 - [Сайт Combodo iTop](http://www.combodo.com/itop)
